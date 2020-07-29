@@ -6,6 +6,9 @@
  *                  - moves is a list of actions that telling how to remove and insert
  */
 function listdiff2(oldList, newList, key) {
+    // makeKeyIndexAndFree: 获取keyIndex和free
+    // keyIndex: 有key得一组对象，key: key，value: index
+    // free: 没有key得集合
     var oldMap = makeKeyIndexAndFree(oldList, key)
     var newMap = makeKeyIndexAndFree(newList, key)
 
@@ -24,6 +27,9 @@ function listdiff2(oldList, newList, key) {
     var freeIndex = 0
 
     // fist pass to check item in old list: if it's removed or not
+    // 首先遍历一遍旧数据(oldList)获取children
+    // 有key时children取新数据(newList)和旧数据(oldList)的并集，按旧数据中的顺序添加，新旧数据中都没有时添加null
+    // 没有key时children按顺序添加newFree中的数据，没有时添加null
     while (i < oldList.length) {
         item = oldList[i]
         itemKey = getItemKey(item, key)
@@ -43,6 +49,9 @@ function listdiff2(oldList, newList, key) {
     var simulateList = children.slice(0)
 
     // remove items no longer exist
+    // 遍历simulateList
+    // simulateList为null的位置在moves中添加{ index: index, type: 0 }，type为0标识移除，同时移除simulateList该位置的null
+
     i = 0
     while (i < simulateList.length) {
         if (simulateList[i] === null) {
@@ -55,6 +64,9 @@ function listdiff2(oldList, newList, key) {
 
     // i is cursor pointing to a item in new list
     // j is cursor pointing to a item in simulateList
+    // 遍历新数据（newList），和simulateList各项对比
+    // 当没有simulateItem时直接在moves中添加{ index: index, item: item, type: 1 }，type为1表示插入
+
     var j = i = 0
     while (i < newList.length) {
         item = newList[i]
@@ -68,11 +80,13 @@ function listdiff2(oldList, newList, key) {
                 j++
             } else {
                 // new item, just inesrt it
+                // 旧数据是否存在该key
                 if (!oldKeyIndex.hasOwnProperty(itemKey)) {
                     insert(i, item)
                 } else {
                     // if remove current simulateItem make item in right place
                     // then just remove it
+                    // 和simulateList下一条key对比
                     var nextItemKey = getItemKey(simulateList[j + 1], key)
                     if (nextItemKey === itemKey) {
                         remove(i)
