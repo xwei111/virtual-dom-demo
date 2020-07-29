@@ -1,0 +1,45 @@
+<!doctype html>
+
+<html>
+
+<head>
+    <title>Virtual Dom</title>
+</head>
+<script src="./listdiff2.js"></script>
+<script src='./consts.js'></script>
+<script src="./element.js"></script>
+<script src='./diff.js'></script>
+<script src='./patch.js'></script>
+
+<body>
+    <button id="patch">Patch</button>
+</body>
+<script>
+    const oldData = createElement('ul', { key: 'ul' }, [
+        createElement('li', { key: 1, class: 'test' }, ['aaa']),
+        createElement('li', { key: 2 }, ['bbb']),
+        createElement('li', { key: 3 }, ['ccc'])
+    ])
+    let newData = createElement('ul', { key: 'ul' }, [
+        createElement('li', { key: 1 }, ['aaa']),
+        createElement('li', { key: 4 }, ['aaa']),
+        createElement('li', { key: 2 }, ['bbb']),
+        createElement('li', { key: 3 }, ['ccc'])
+    ])
+
+    const app = oldData.render()
+    document.body.appendChild(app)
+
+    const patchel = document.getElementById('patch')
+
+    patchel.addEventListener('click', () => {
+        if (!newData) return
+        const patches = diff(oldData, newData)
+        console.log('patches----------', patches)
+        patch(app, patches)
+        newData = null
+    })
+
+</script>
+
+</html>
